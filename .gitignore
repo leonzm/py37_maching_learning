@@ -1,0 +1,12 @@
+# IntelliJ project files
+.idea
+*.iml
+*.log
+*.pyc
+out
+gen
+node_modules
+.venv
+*.db
+.DS_Store
+venv
