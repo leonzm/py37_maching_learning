@@ -30,7 +30,7 @@ for img_file_path in img_file_paths:
     b, g, r = cv2.split(img)
     img2 = cv2.merge([r, g, b])
 
-    dets = detector(img, 1)  # 人脸标定
+    dets = detector(img2, 1)  # 人脸标定，参数：image[adarray], upsample_num_times[int] 上采样次数
     # print("Number of faces detected: {}".format(len(dets)))
 
     # 画出面部特征点
