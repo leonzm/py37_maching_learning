@@ -8,11 +8,13 @@
 # @Description: 使用 CIFAR-10 图像集训练 ResNet-18
 # 因为原 ResNet-18 的输出是 (3, 224, 224)，而 CIFAR-10 的大小是 (3, 32, 32)，故重写 ResNet18
 # 参考：https://blog.csdn.net/sunqiande88/article/details/80100891
+# 显存不够可调整测试集使用量
 import torch
 import torchvision
 import torch.nn as nn
 import torch.utils.data as Data
 import torch.nn.functional as F
+from torch.autograd import Variable
 import torchvision.transforms as transforms
 
 
@@ -102,11 +104,15 @@ transform_test = transforms.Compose([
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
 
-trainset = torchvision.datasets.CIFAR10(root=DOWNLOAD_FILE_PATH, train=True, download=DOWNLOAD_CIFAR, transform=transform_train)  # 训练数据集
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)  # 生成一个个batch进行批训练，组成batch的时候顺序打乱取
+train_data = torchvision.datasets.CIFAR10(root=DOWNLOAD_FILE_PATH, train=True, download=DOWNLOAD_CIFAR, transform=transform_train)  # 训练数据集
+train_loader = torch.utils.data.DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)  # 生成一个个batch进行批训练，组成batch的时候顺序打乱取
 
-testset = torchvision.datasets.CIFAR10(root=DOWNLOAD_FILE_PATH, train=False, download=DOWNLOAD_CIFAR, transform=transform_test)
-testloader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
+test_data = torchvision.datasets.CIFAR10(root=DOWNLOAD_FILE_PATH, train=False)
+test_x = torch.from_numpy(test_data.test_data[:]).type(torch.FloatTensor) / 255
+test_x = torch.transpose(torch.transpose(test_x, 2, 3), 1, 2)  # (50000, 32, 32, 3) -> (50000, 3, 32, 32)
+test_y = torch.Tensor(test_data.test_labels[:]).type(torch.LongTensor)  # 注意 y 必须是 LongTensor 类型
+test_x, test_y = test_x.to(device), test_y.to(device)
+test_x, test_y = Variable(test_x), Variable(test_y)
 
 # Cifar-10的标签
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
@@ -115,7 +121,36 @@ resnet18 = get_resnet18().to(device)
 # print(resnet18)
 
 # 定义损失函数和优化方式
-criterion = nn.CrossEntropyLoss()  #损失函数为交叉熵，多用于多分类问题
+loss_func = nn.CrossEntropyLoss()  #损失函数为交叉熵，多用于多分类问题
 optimizer = torch.optim.SGD(resnet18.parameters(), lr=LR, momentum=0.9, weight_decay=5e-4)  # 优化方式为mini-batch momentum-SGD，并采用L2正则化（权重衰减）
 
+for epoch in range(EPOCH):
+    for step, (b_x, b_y) in enumerate(train_loader):
+        b_x, b_y = b_x.to(device), b_y.to(device)
+        v_b_x, v_b_y = Variable(b_x), Variable(b_y)
+        output = resnet18(v_b_x)
+        loss = loss_func(output, v_b_y)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if step % 100 == 0 or step == (len(train_loader) - 1):
+            # 训练集 batch 的准确率
+            train_predict_y = torch.max(output, 1)[1].data.squeeze().cpu().numpy()
+            train_accuracy = float((train_predict_y == v_b_y.data.cpu().numpy()).astype(int).sum()) / float(v_b_y.size(0))
+
+            # 测试集的准确率
+            test_output = resnet18(test_x)
+            # 测试集损失
+            test_loss = loss_func(test_output, test_y)
+            # 测试集准确率
+            test_predict_y = torch.max(test_output, 1)[1].data.squeeze().cpu().numpy()
+            test_accuracy = float((test_predict_y == test_y.data.cpu().numpy()).astype(int).sum()) / float(test_y.size(0))
+            print('Epoch: ', epoch, 'step: ', step,
+                  '| train loss: %.4f' % loss.data.cpu().numpy(),
+                  '| test loss: %.4f' % test_loss.data.cpu().numpy(),
+                  '| train accuracy: %.2f' % train_accuracy,
+                  '| test accuracy: %.2f' % test_accuracy)
+        pass
+    pass
 
