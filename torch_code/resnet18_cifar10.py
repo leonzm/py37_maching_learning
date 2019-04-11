@@ -7,6 +7,7 @@
 # @Software: PyCharm
 # @Description: # @Description: 使用 CIFAR-10 图像集训练 ResNet-18
 # 因为原 ResNet-18 的输出是 (3, 224, 224)，而 CIFAR-10 的大小是 (3, 32, 32)，故这里复写 forward() 方法，去掉 fc 前的池化层的使用
+# 如果内存不够用，可减少 batch_size 大小；也可以减少测试集的使用量
 import os
 import torch
 import torchvision
@@ -71,7 +72,7 @@ loss_func = nn.CrossEntropyLoss()
 # 训练集 DataLoader
 train_loader = Data.DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True)
 # 测试集 x, y。注意和训练集不同，这里需要手动将像素压到 [0.0, 1.0] 间。注意 训练集的数据必须是 FloatTensor 类型
-test_x = torch.from_numpy(test_data.test_data).type(torch.FloatTensor) / 255
+test_x = torch.from_numpy(test_data.test_data[:]).type(torch.FloatTensor) / 255
 test_x = torch.transpose(torch.transpose(test_x, 2, 3), 1, 2)  # (50000, 32, 32, 3) -> (50000, 3, 32, 32)
 test_y = torch.Tensor(test_data.test_labels[:]).type(torch.LongTensor)  # 注意 y 必须是 LongTensor 类型
 test_x, test_y = test_x.to(device), test_y.to(device)
@@ -87,7 +88,7 @@ for epoch in range(EPOCH):
         loss.backward()
         optimizer.step()
 
-        if step % 100 == 0:
+        if step % 100 == 0 or step == (len(train_loader) - 1):
             test_output = resnet18(test_x)
             # 测试集损失
             test_loss = loss_func(test_output, test_y)
