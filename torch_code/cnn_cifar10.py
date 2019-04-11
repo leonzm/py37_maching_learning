@@ -32,8 +32,8 @@ if not (os.path.exists(DOWNLOAD_FILE_PATH)) or not os.listdir(DOWNLOAD_FILE_PATH
 train_data = torchvision.datasets.CIFAR10(
     root=DOWNLOAD_FILE_PATH,
     train=True,
-    transform=torchvision.transforms.ToTensor(),
     # Converts a PIL.Image or numpy.ndarray to # torch.FloatTensor of shape (C x H x W) and normalize in the range [0.0, 1.0]
+    transform=torchvision.transforms.ToTensor(),
     download=DOWNLOAD_CIFAR
 )
 test_data = torchvision.datasets.CIFAR10(root=DOWNLOAD_FILE_PATH, train=False)
