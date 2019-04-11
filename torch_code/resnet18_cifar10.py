@@ -89,6 +89,11 @@ for epoch in range(EPOCH):
         optimizer.step()
 
         if step % 100 == 0 or step == (len(train_loader) - 1):
+            # 训练集 batch 的准确率
+            train_predict_y = torch.max(output, 1)[1].data.squeeze().cpu().numpy()
+            train_accuracy = float((train_predict_y == v_b_y.data.cpu().numpy()).astype(int).sum()) / float(v_b_y.size(0))
+
+            # 测试集的准确率
             test_output = resnet18(test_x)
             # 测试集损失
             test_loss = loss_func(test_output, test_y)
@@ -98,7 +103,8 @@ for epoch in range(EPOCH):
             print('Epoch: ', epoch, 'step: ', step,
                   '| train loss: %.4f' % loss.data.cpu().numpy(),
                   '| test loss: %.4f' % test_loss.data.cpu().numpy(),
+                  '| train accuracy: %.2f' % train_accuracy,
                   '| test accuracy: %.2f' % test_accuracy)
         pass
     pass
-# Epoch:  9 step:  400 | train loss: 0.2184 | test loss: 0.9151 | test accuracy: 0.76
+# Epoch:  9 step:  499 | train loss: 0.3604 | test loss: 0.8877 | train accuracy: 0.92 | test accuracy: 0.75
