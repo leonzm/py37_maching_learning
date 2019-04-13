@@ -71,9 +71,9 @@ loss_func = nn.CrossEntropyLoss()
 
 # 训练集 DataLoader
 train_loader = Data.DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True)
-# 测试集 x, y。注意和训练集不同，这里需要手动将像素压到 [0.0, 1.0] 间。注意 训练集的数据必须是 FloatTensor 类型
+# 测试集 x, y。注意和训练集不同，这里需要手动将像素压到 [0.0, 1.0] 间。注意 训练集的数据必须是 FloatTensor 类型。还有 图像的 (宽度, 高度, 深度) 需更新为 (深度, 宽度, 高度)
 test_x = torch.from_numpy(test_data.test_data[:]).type(torch.FloatTensor) / 255
-test_x = torch.transpose(torch.transpose(test_x, 2, 3), 1, 2)  # (50000, 32, 32, 3) -> (50000, 3, 32, 32)
+test_x = torch.transpose(torch.transpose(test_x, 2, 3), 1, 2)  # (50000, 32, 32, 3) -> (50000, 32, 3, 32) -> (50000, 3, 32, 32)
 test_y = torch.Tensor(test_data.test_labels[:]).type(torch.LongTensor)  # 注意 y 必须是 LongTensor 类型
 test_x, test_y = test_x.to(device), test_y.to(device)
 test_x, test_y = Variable(test_x), Variable(test_y)
