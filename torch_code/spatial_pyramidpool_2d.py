@@ -47,7 +47,7 @@ if __name__ == '__main__':
     tensor_img = tensor_img.view(1, tensor_img.size()[0], tensor_img.size()[1], tensor_img.size()[2])
     # 图像的 (宽度, 高度, 深度) 更新为 (深度, 宽度, 高度)
     tensor_img = torch.transpose(torch.transpose(tensor_img, 2, 3), 1, 2)  # (1, w, h, d) -> (1, w, d, h) -> (1, d, w, h)
-    # print(tensor_img.size())  # (1, 3, 558, 576)
+    # print(tensor_img.size())  # (1, 3, 224, 224)
 
     pool = SpatialPyramidPool2D(out_side=(1, 2, 4))
     print(pool(tensor_img).size())  # (1, 63)
