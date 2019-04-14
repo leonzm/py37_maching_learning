@@ -12,3 +12,4 @@ node_modules
 venv
 torch_code/mnist
 torch_code/cifar
+gan_demo/data/faces
