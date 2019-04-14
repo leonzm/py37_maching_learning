@@ -144,7 +144,7 @@ def train(**kwargs):
                 # errorg_meter.add(error_g.data[0])
                 errorg_meter.add(error_g.item())
 
-            if opt.vis and ii % opt.plot_every == opt.plot_every - 1:
+            if opt.vis and ii % opt.plot_every == 0:
                 ## 可视化
                 fix_fake_imgs = netg(fix_noises)
                 vis.images(fix_fake_imgs.data.cpu().numpy()[:64] * 0.5 + 0.5, win='fixfake')
