@@ -5,7 +5,7 @@
 # @Site    : 
 # @File    : dropout_test.py
 # @Software: PyCharm
-# @Description: 使用 Dropout 与 不适用 Dropout 的效果对比
+# @Description: 使用 Dropout 与 不使用 Dropout 的效果对比
 import torch
 import matplotlib.pyplot as plt
 
