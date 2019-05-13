@@ -18,3 +18,4 @@ python gan_demo/main.py generate --gen-im='result1.5w.png --gen-search-num=15000
 ```
 
 ## 使用 Fast Neural Style 的方式实现风格迁移
+> ![神经网络风格迁移](https://github.com/leonzm/py37_maching_learning/tree/master/fast_neural_style/desc/fast_neural_style.png)

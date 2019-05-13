@@ -8,8 +8,8 @@
 # @Description: 计算高层特征 VGG-16
 import torch
 import torch.nn as nn
-from torchvision.models import vgg16
 from collections import namedtuple
+from torchvision.models import vgg16
 
 
 class Vgg16(torch.nn.Module):

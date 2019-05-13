@@ -8,8 +8,8 @@
 # @Description:
 import tqdm
 import torch as t
-import torchvision as tv
 import torchnet as tnt
+import torchvision as tv
 from torch.utils import data
 from torch.autograd import Variable
 from torch.nn import functional as F

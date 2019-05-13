@@ -6,11 +6,12 @@
 # @File    : utils.py
 # @Software: PyCharm
 # @Description: Gram 计算、InstanceNorm 等
-import visdom
-import torch as t
 import time
-import torchvision as tv
+import visdom
 import numpy as np
+import torch as t
+import torchvision as tv
+
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]

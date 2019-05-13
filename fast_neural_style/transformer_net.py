@@ -6,8 +6,8 @@
 # @File    : transformer_net.py
 # @Software: PyCharm
 # @Description: 风格迁移网络
-from torch import nn
 import numpy as np
+from torch import nn
 
 
 class TransformerNet(nn.Module):
