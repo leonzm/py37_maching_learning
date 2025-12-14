@@ -10,6 +10,10 @@ node_modules
 *.db
 .DS_Store
 venv
+
+ann/mnist
 torch_code/mnist
 torch_code/cifar
 gan_demo/data/faces
+
+
